@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Despachos | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script type="module" src="../js/despachos.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand"><img src="../assets/pan-logo.svg" alt="" width="44" height="44"><div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div></div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom"><button type="button" id="logout-sidebar" class="sidebar__logout">↪ Cerrar sesión</button></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar"><div class="topbar__left"><button type="button" id="menu-toggle" class="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button><div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Despachos</strong></div></div><div class="topbar__right"><span id="fecha-actual" class="topbar__date"></span><img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" /></div></header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading">
+          <div><p class="eyebrow">DISTRIBUCIÓN A SUCURSALES</p><h1>Gestión de despachos</h1><p class="workspace__subtitle" id="usuario-actual"></p></div>
+          <div class="workspace__heading-actions"><button type="button" id="btn-recargar" class="button button--ghost">↻ Actualizar</button><button type="button" id="btn-nuevo" class="button button--primary" hidden>＋ Registrar despacho</button></div>
+        </section>
+        <p class="pedido-modulo--readonly" id="aviso-sucursal" hidden>Estás consultando los despachos de tu sucursal. Los despachos y las confirmaciones de recepción se registran por el personal de Producción o Administración.</p>
+        <section class="mini-stats" aria-label="Indicadores de despachos">
+          <div class="mini-stat"><span id="stat-total-etiqueta">Despachos registrados</span><strong id="stat-total">—</strong></div>
+          <div class="mini-stat"><span>Despachados</span><strong id="stat-despachados">—</strong></div>
+          <div class="mini-stat"><span>Recibidos</span><strong id="stat-recibidos">—</strong></div>
+          <div class="mini-stat"><span>Sucursales atendidas</span><strong id="stat-sucursales">—</strong></div>
+        </section>
+        <section class="data-panel" aria-labelledby="titulo-listado">
+          <div class="data-panel__header"><div><h2 id="titulo-listado">Historial de despachos</h2><p id="descripcion-listado">Consulta los envíos y confirma las recepciones pendientes.</p></div><span class="soft-badge" id="alcance-datos">CONTROL DE ENTREGAS</span></div>
+          <div class="filters-row"><label class="filter-field filter-field--search"><span>Buscar despacho</span><input id="buscar" type="search" autocomplete="off" placeholder="ID, sucursal, pedido o nota"></label><label class="filter-field"><span>Estado</span><select id="filtro-estado"><option value="">Todos los estados</option><option value="DESPACHADO">Despachado</option><option value="RECIBIDO">Recibido</option></select></label></div>
+          <p class="table-status" id="estado-carga" role="status">Consultando despachos…</p>
+          <div class="table-scroll"><table class="data-table despacho-tabla"><thead><tr><th>Despacho</th><th>Pedido</th><th>Sucursal</th><th>Fecha</th><th>Estado</th><th>Observaciones</th><th>Acciones</th></tr></thead><tbody id="tabla-despachos"></tbody></table></div>
+          <div class="panel-footer" id="conteo-filtrado">—</div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="dialog-nuevo" class="form-dialog" aria-labelledby="titulo-nuevo">
+    <form id="form-nuevo" novalidate>
+      <div class="form-dialog__header"><div><p class="eyebrow">SALIDA DE PRODUCTOS TERMINADOS</p><h2 id="titulo-nuevo">Registrar despacho</h2></div><button type="button" class="dialog-close" id="cerrar-nuevo" aria-label="Cerrar">×</button></div>
+      <p class="form-dialog__subtitle">Solo se pueden despachar pedidos en estado LISTO que aún no tienen despacho. El usuario responsable se obtiene automatico.</p>
+      <div class="form-grid">
+        <label class="form-field form-field--wide"><span>Pedido listo para despachar <b>*</b></span><select id="nuevo-pedido" required><option value="">Seleccionar pedido…</option></select></label>
+        <label class="form-field form-field--wide"><span>Observaciones del envío</span><textarea id="nuevo-observaciones" maxlength="400" rows="3" placeholder="Ej.: Entrega programada para la sucursal"></textarea></label>
+      </div>
+      <p class="small-note" id="ayuda-pedido">Cargando pedidos disponibles…</p>
+      <p class="form-error" id="error-nuevo" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-nuevo">Cancelar</button><button type="submit" class="button button--primary" id="guardar-nuevo">Registrar despacho</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dialog-detalle" class="form-dialog form-dialog--wide" aria-labelledby="titulo-detalle">
+    <div class="form-dialog__header"><div><p class="eyebrow">PRODUCTOS ENVIADOS</p><h2 id="titulo-detalle">Detalle de despacho</h2></div><button type="button" class="dialog-close" id="cerrar-detalle" aria-label="Cerrar">×</button></div>
+    <p class="form-dialog__subtitle">Consulta los panes entregados a la sucursal.</p>
+    <div class="pedido-detail-summary"><span>Pedido <strong id="detalle-pedido">—</strong></span><span>Sucursal <strong id="detalle-sucursal">—</strong></span><span>Estado <strong id="detalle-estado">—</strong></span></div>
+    <p class="despacho-detalle-observaciones" id="detalle-observaciones"></p>
+    <p class="table-status" id="detalle-carga" role="status">Cargando productos…</p>
+    <div class="table-scroll"><table class="data-table"><thead><tr><th>Pan despachado</th><th class="num">Unidades enviadas</th></tr></thead><tbody id="tabla-detalle"></tbody></table></div>
+    <div class="pedido-total">Total enviado <strong id="detalle-total">0</strong> panes</div>
+    <div class="dialog-actions"><button type="button" class="button button--ghost" id="cerrar-detalle-pie">Cerrar</button><button type="button" class="button button--primary" id="detalle-recibir" hidden>Confirmar recepción</button></div>
+  </dialog>
+
+  <dialog id="dialog-confirmar" class="confirm-dialog" aria-labelledby="titulo-confirmar">
+    <h2 id="titulo-confirmar">Confirmar recepción</h2>
+    <p id="mensaje-confirmar">—</p>
+    <p class="form-error" id="error-confirmar" role="alert" hidden></p>
+    <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-confirmar">Cancelar</button><button type="button" class="button button--primary" id="aceptar-confirmar">Sí, confirmar recepción</button></div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

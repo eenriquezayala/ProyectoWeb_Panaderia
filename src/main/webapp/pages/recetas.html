@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recetas | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script type="module" src="../js/recetas.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand"><img src="../assets/pan-logo.svg" alt="" width="44" height="44"><div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div></div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom"><button type="button" id="logout-sidebar" class="sidebar__logout">↪ Cerrar sesión</button></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar"><div class="topbar__left"><button type="button" id="menu-toggle" class="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button><div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Recetas</strong></div></div><div class="topbar__right"><span id="fecha-actual" class="topbar__date"></span><img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" /></div></header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading"><div><p class="eyebrow">FÓRMULAS DE PANADERÍA</p><h1>Recetas y rendimientos</h1><p class="workspace__subtitle" id="usuario-actual"></p></div>
+          <div class="workspace__heading-actions"><button type="button" class="button button--ghost" id="btn-recargar">↻ Actualizar</button><button type="button" class="button button--primary" id="btn-nuevo">＋ Nueva receta</button></div>
+        </section>
+        
+<section class="mini-stats" aria-label="Indicadores de recetas">
+  <div class="mini-stat"><span>Recetas activas</span><strong id="total-recetas">—</strong></div>
+  <div class="mini-stat"><span>Con ingredientes</span><strong id="recetas-completas">—</strong></div>
+  <div class="mini-stat"><span>Por completar</span><strong id="recetas-vacias">—</strong></div>
+  <div class="mini-stat"><span>Ingredientes disponibles</span><strong id="total-insumos">—</strong></div>
+</section>
+<section class="data-panel" aria-labelledby="titulo-listado">
+  <div class="data-panel__header"><div><h2 id="titulo-listado">Recetas de panadería</h2><p>Consulta los rendimientos y agrega ingredientes a las recetas activas.</p></div><span class="soft-badge">ADMINISTRADOR / PRODUCCIÓN</span></div>
+  <div class="filters-row"><label class="filter-field filter-field--search"><span>Buscar receta o pan</span><input type="search" id="buscar" placeholder="Ej. Francés, Cubos…" autocomplete="off"></label><label class="filter-field"><span>Ingredientes</span><select id="filtro-completa"><option value="">Todas</option><option value="con">Con ingredientes</option><option value="sin">Sin ingredientes</option></select></label></div>
+  <p class="table-status" id="estado-carga" role="status">Cargando recetas de Oracle…</p>
+  <div class="table-scroll"><table class="data-table"><thead><tr><th>Receta</th><th>Producto final</th><th class="num">Rendimiento</th><th>Ingredientes</th><th>Acciones</th></tr></thead><tbody id="tabla-recetas"></tbody></table></div>
+  <div class="panel-footer" id="conteo-filtrado">—</div>
+</section>
+
+      </main>
+    </div>
+  </div>
+  
+<dialog id="dialog-receta" class="form-dialog" aria-labelledby="titulo-dialogo-receta">
+  <form id="form-receta" novalidate>
+    <div class="form-dialog__header"><div><p class="eyebrow">RECETARIO</p><h2 id="titulo-dialogo-receta">Crear receta</h2></div><button class="dialog-close" id="cerrar-receta" type="button" aria-label="Cerrar">×</button></div>
+    <p class="form-dialog__subtitle">Una receta corresponde a un pan terminado y su rendimiento indica cuántas unidades produce.</p>
+    <div class="form-grid">
+      <label class="form-field"><span>Pan terminado <b>*</b></span><select id="receta-producto" required><option value="">Seleccionar pan…</option></select></label>
+      <label class="form-field"><span>Nombre de la receta <b>*</b></span><input id="receta-nombre" type="text" maxlength="120" required placeholder="Ej. Receta de pan Francés"></label>
+      <label class="form-field"><span>Rendimiento (panes) <b>*</b></span><input id="receta-rendimiento" type="number" min="1" step="1" required placeholder="100"></label>
+      <label class="form-field form-field--wide"><span>Descripción (opcional)</span><textarea id="receta-descripcion" rows="3" maxlength="500" placeholder="Notas de preparación…"></textarea></label>
+    </div>
+    <p class="form-error" id="error-receta" role="alert" hidden></p>
+    <div class="dialog-actions"><button class="button button--ghost" id="cancelar-receta" type="button">Cancelar</button><button class="button button--primary" id="guardar-receta" type="submit">Crear receta</button></div>
+  </form>
+</dialog>
+<dialog id="dialog-detalle" class="form-dialog form-dialog--wide" aria-labelledby="titulo-detalle">
+  <div class="form-dialog__header"><div><p class="eyebrow">FÓRMULA DE PRODUCCIÓN</p><h2 id="titulo-detalle">Detalle de receta</h2></div><button class="dialog-close" id="cerrar-detalle" type="button" aria-label="Cerrar">×</button></div>
+  <p class="form-dialog__subtitle" id="detalle-descripcion">—</p>
+  <div class="detail-summary"><span>Pan: <strong id="detalle-producto">—</strong></span><span>Rendimiento: <strong id="detalle-rendimiento">—</strong></span></div>
+  <p class="table-status" id="detalle-estado" role="status"></p>
+  <div class="table-scroll"><table class="data-table"><thead><tr><th>Ingrediente</th><th class="num">Cantidad</th><th>Unidad</th></tr></thead><tbody id="tabla-ingredientes"></tbody></table></div>
+  <div class="dialog-actions"><button class="button button--ghost" id="cerrar-detalle-pie" type="button">Cerrar</button><button class="button button--primary" id="btn-agregar-ingrediente" type="button">＋ Agregar ingrediente</button></div>
+</dialog>
+<dialog id="dialog-ingrediente" class="form-dialog" aria-labelledby="titulo-ingrediente">
+  <form id="form-ingrediente" novalidate>
+    <div class="form-dialog__header"><div><p class="eyebrow">COMPOSICIÓN DE RECETA</p><h2 id="titulo-ingrediente">Agregar ingrediente</h2></div><button class="dialog-close" id="cerrar-ingrediente" type="button" aria-label="Cerrar">×</button></div>
+    <p class="form-dialog__subtitle" id="subtitulo-ingrediente">Selecciona un insumo del catálogo.</p>
+    <div class="form-grid"><label class="form-field"><span>Insumo <b>*</b></span><select id="ingrediente-insumo" required><option value="">Seleccionar insumo…</option></select></label><label class="form-field"><span>Cantidad por rendimiento <b>*</b></span><input id="ingrediente-cantidad" type="number" min="0.0001" step="any" required placeholder="Ej. 5.5"></label></div>
+    <p class="small-note">La unidad depende del insumo (KG, LITRO, UNIDAD, etc.). Si ya está agregado, Oracle rechazará el duplicado.</p>
+    <p class="form-error" id="error-ingrediente" role="alert" hidden></p>
+    <div class="dialog-actions"><button class="button button--ghost" id="cancelar-ingrediente" type="button">Cancelar</button><button class="button button--primary" id="guardar-ingrediente" type="submit">Agregar ingrediente</button></div>
+  </form>
+</dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

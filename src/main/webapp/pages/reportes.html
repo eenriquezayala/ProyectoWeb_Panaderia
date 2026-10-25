@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reportes gerenciales | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script type="module" src="../js/reportes.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand"><img src="../assets/pan-logo.svg" alt="" width="44" height="44"><div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div></div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom"><button type="button" id="logout-sidebar" class="sidebar__logout">↪ Cerrar sesión</button></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar"><div class="topbar__left"><button type="button" id="menu-toggle" class="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button><div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Reportes gerenciales</strong></div></div><div class="topbar__right"><span id="fecha-actual" class="topbar__date"></span><img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" /></div></header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading">
+          <div><p class="eyebrow">INTELIGENCIA OPERATIVA</p><h1>Reportes gerenciales</h1><p class="workspace__subtitle" id="usuario-actual"></p></div>
+          <div class="workspace__heading-actions"><button type="button" id="btn-actualizar" class="button button--ghost">↻ Actualizar</button></div>
+        </section>
+        <section class="report-filters" aria-label="Filtros del período">
+          <div class="report-filters__heading"><div><h2>Período de análisis</h2><p>Explora el comportamiento de las sucursales y la producción.</p></div><span class="soft-badge">DATOS REALES DE ORACLE</span></div>
+          <form id="form-fechas" class="report-filters__form" novalidate>
+            <label class="filter-field"><span>Desde</span><input id="fecha-desde" name="desde" type="date" required></label>
+            <label class="filter-field"><span>Hasta</span><input id="fecha-hasta" name="hasta" type="date" required></label>
+            <button type="submit" class="button button--primary" id="btn-aplicar">Aplicar fechas</button>
+            <button type="button" class="button button--ghost" id="btn-mes">Mes actual</button>
+          </form>
+          <p id="fechas-error" class="form-error" role="alert" hidden></p>
+        </section>
+        <section class="mini-stats report-kpis" aria-label="Resumen del período">
+          <div class="mini-stat"><span>Pedidos válidos</span><strong id="kpi-pedidos">—</strong><small>Excluye borradores y cancelados</small></div>
+          <div class="mini-stat"><span>Panes solicitados</span><strong id="kpi-solicitados">—</strong><small>Unidades de pedidos válidos</small></div>
+          <div class="mini-stat"><span>Panes producidos</span><strong id="kpi-producidos">—</strong><small>Unidades fabricadas</small></div>
+          <div class="mini-stat"><span>Despachos realizados</span><strong id="kpi-despachos">—</strong><small>Incluye recibidos</small></div>
+          <div class="mini-stat mini-stat--alert"><span>Productos con inventario bajo</span><strong id="kpi-inventario">—</strong><small>Estado actual del inventario</small></div>
+        </section>
+        <section class="data-panel report-panel" aria-labelledby="titulo-reportes">
+          <div class="data-panel__header report-panel__header"><div><h2 id="titulo-reportes">Explora los reportes</h2><p id="descripcion-reportes">Selecciona una categoría para consultar resultados.</p></div>
+            <button type="button" class="report-tab" id="tab-pedidos" role="tab" aria-selected="true" aria-controls="report-contenido" data-reporte="pedidos">Pedidos por sucursal</button>
+            <button type="button" class="report-tab" id="tab-panes" role="tab" aria-selected="false" aria-controls="report-contenido" tabindex="-1" data-reporte="panes">Panes solicitados</button>
+            <button type="button" class="report-tab" id="tab-produccion" role="tab" aria-selected="false" aria-controls="report-contenido" tabindex="-1" data-reporte="produccion">Producción diaria</button>
+            <button type="button" class="report-tab" id="tab-despachos" role="tab" aria-selected="false" aria-controls="report-contenido" tabindex="-1" data-reporte="despachos">Despachos</button>
+            <button type="button" class="report-tab" id="tab-inventario" role="tab" aria-selected="false" aria-controls="report-contenido" tabindex="-1" data-reporte="inventario">Inventario bajo</button>
+          </div>
+          <div id="report-contenido" role="tabpanel" aria-labelledby="tab-pedidos" tabindex="0">
+            <div class="report-detail-header"><div><h3 id="reporte-titulo">Pedidos por sucursal</h3><p id="reporte-descripcion">Pedidos válidos y unidades solicitadas.</p></div><span id="reporte-alcance" class="report-period"></span></div>
+            <p id="estado-reportes" class="table-status" role="status" aria-live="polite">Consultando información…</p>
+            <div class="report-chart-wrap" id="grafico-contenedor" hidden>
+              <div class="report-chart-heading"><strong id="grafico-titulo">Unidades por sucursal</strong><span id="grafico-nota"></span></div>
+              <div id="grafico-barras" class="report-chart" aria-label="Visualización de datos"></div>
+              <div id="grafico-leyenda" class="report-legend"></div>
+            </div>
+            <div class="report-table-heading"><h3>Detalle del reporte</h3><span id="reporte-filas">—</span></div>
+            <div class="table-scroll"><table class="data-table report-table"><thead><tr id="tabla-encabezado"></tr></thead><tbody id="tabla-reporte"></tbody></table></div>
+            <div class="panel-footer" id="pie-reporte">—</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

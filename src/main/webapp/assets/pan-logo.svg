@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" role="img" aria-labelledby="title">
+<title id="title">La Migaja De San Carlos</title>
+<rect width="80" height="80" rx="23" fill="#E8B86B"/>
+<path d="M19 48c0-11 9-20 21-20s21 9 21 20c0 6-5 10-12 10H31c-7 0-12-4-12-10Z" fill="#6A3D26"/>
+<path d="M23 46c2-8 8-14 17-14s15 6 17 14c-9-6-25-6-34 0Z" fill="#FFF3D9"/>
+<path d="m34 34-4 9m12-11-3 10m12-8-3 10" stroke="#C88E4B" stroke-width="3" stroke-linecap="round"/>
+<path d="M27 59h26" stroke="#FFF3D9" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+</svg>

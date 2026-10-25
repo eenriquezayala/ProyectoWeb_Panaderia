@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productos | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  <script type="module" src="../js/productos.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand"><img src="../assets/pan-logo.svg" alt="" width="44" height="44" /><div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div></div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom"><button type="button" class="sidebar__logout" id="logout-sidebar">↪ Cerrar sesión</button></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar">
+        <div class="topbar__left"><button type="button" class="menu-toggle" id="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button><div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Productos</strong></div></div>
+        <div class="topbar__right"><span class="topbar__date" id="fecha-actual"></span><img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" /></div>
+      </header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading">
+          <div><p class="eyebrow">CATÁLOGO DE LA PANADERÍA</p><h1>Productos e insumos</h1><p id="usuario-actual" class="workspace__subtitle"></p></div>
+          <div class="workspace__heading-actions"><button class="button button--ghost" type="button" id="btn-recargar">↻ Actualizar</button><button class="button button--primary" type="button" id="btn-nuevo" hidden>＋ Nuevo producto</button></div>
+        </section>
+        <div class="mini-stats" id="mini-stats"><div class="mini-stat"><span>Productos</span><strong id="total-productos">—</strong></div><div class="mini-stat"><span>Panes terminados</span><strong id="total-finales">—</strong></div><div class="mini-stat"><span>Insumos</span><strong id="total-insumos">—</strong></div><div class="mini-stat"><span>Activos</span><strong id="total-activos">—</strong></div></div>
+        <section class="data-panel" aria-labelledby="titulo-tabla">
+          <div class="data-panel__header"><div><h2 id="titulo-tabla">Catálogo de productos</h2><p>Consulta productos finales e ingredientes registrados.</p></div><span class="soft-badge" id="modo-consulta" hidden>Solo consulta</span></div>
+          <div class="filters-row"><label class="filter-field filter-field--search"><span>Buscar</span><input id="buscar" type="search" placeholder="Código o nombre del producto" autocomplete="off" /></label><label class="filter-field"><span>Tipo</span><select id="filtro-tipo"><option value="">Todos</option><option value="FINAL">Panes (FINAL)</option><option value="INSUMO">Ingredientes (INSUMO)</option></select></label><label class="filter-field"><span>Estado</span><select id="filtro-estado"><option value="">Todos</option><option value="1">Activo</option><option value="0">Inactivo</option></select></label></div>
+          <p class="table-status" id="estado-carga" role="status">Cargando productos…</p>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>Producto</th><th>Tipo</th><th>Unidad</th><th class="num">Existencia</th><th class="num">Mínimo</th><th>Estado</th><th id="col-acciones" hidden>Acciones</th></tr></thead><tbody id="tabla-productos"></tbody></table></div>
+          <div class="panel-footer" id="conteo-filtrado"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <dialog class="form-dialog" id="dialog-producto" aria-labelledby="titulo-dialogo">
+    <form id="form-producto" novalidate>
+      <div class="form-dialog__header"><div><p class="eyebrow">CATÁLOGO</p><h2 id="titulo-dialogo">Nuevo producto</h2></div><button type="button" class="dialog-close" id="cerrar-dialogo" aria-label="Cerrar">×</button></div>
+      <p class="form-dialog__subtitle">Los productos nuevos comienzan con existencia cero.</p>
+      <div class="form-grid"><label class="form-field"><span>Código <b>*</b></span><input name="codigo" id="producto-codigo" maxlength="30" required placeholder="PAN012" /></label><label class="form-field"><span>Nombre <b>*</b></span><input name="nombre" id="producto-nombre" maxlength="120" required placeholder="Pan integral" /></label><label class="form-field" id="grupo-tipo"><span>Tipo <b>*</b></span><select name="tipo" id="producto-tipo" required><option value="FINAL">Pan terminado (FINAL)</option><option value="INSUMO">Ingrediente (INSUMO)</option></select></label><label class="form-field"><span>Unidad de medida <b>*</b></span><select name="unidadMedida" id="producto-unidad" required><option value="UNIDAD">UNIDAD</option><option value="KG">KG</option><option value="LITRO">LITRO</option><option value="GRAMO">GRAMO</option><option value="OTRA">Otra (escribir abajo)</option></select></label><label class="form-field" id="grupo-unidad-personalizada" hidden><span>Unidad personalizada</span><input id="producto-unidad-personalizada" maxlength="30" placeholder="CAJA" /></label><label class="form-field"><span>Existencia mínima <b>*</b></span><input type="number" name="existenciaMinima" id="producto-minima" min="0" step="0.001" value="0" required /></label></div>
+      <p class="form-error" id="error-producto" role="alert" hidden></p>
+      <div class="dialog-actions"><button class="button button--ghost" type="button" id="cancelar-dialogo">Cancelar</button><button class="button button--primary" type="submit" id="guardar-producto">Guardar producto</button></div>
+    </form>
+  </dialog>
+  <dialog class="confirm-dialog" id="dialog-confirmar" aria-labelledby="titulo-confirmar"><h2 id="titulo-confirmar">Confirmar cambio</h2><p id="mensaje-confirmar"></p><div class="dialog-actions"><button class="button button--ghost" type="button" id="btn-no-confirmar">Cancelar</button><button class="button button--primary" type="button" id="btn-si-confirmar">Confirmar</button></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

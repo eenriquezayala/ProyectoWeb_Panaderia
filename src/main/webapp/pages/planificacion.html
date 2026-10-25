@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Planificación de insumos | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script type="module" src="../js/planificacion.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand"><img src="../assets/pan-logo.svg" alt="" width="44" height="44"><div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div></div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom"><button type="button" id="logout-sidebar" class="sidebar__logout">↪ Cerrar sesión</button></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar"><div class="topbar__left"><button type="button" id="menu-toggle" class="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button><div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Planificación de insumos</strong></div></div><div class="topbar__right"><span id="fecha-actual" class="topbar__date"></span><img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" /></div></header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading">
+          <div><p class="eyebrow">ANTES DE COMENZAR A FABRICAR</p><h1>Planificación de insumos</h1><p class="workspace__subtitle" id="usuario-actual"></p></div>
+          <div class="workspace__heading-actions"><a class="button button--ghost" href="producciones.html">← Volver a Producción</a><button type="button" class="button button--ghost" id="btn-recargar">↻ Actualizar</button></div>
+        </section>
+        <section class="data-panel plan-select-panel">
+          <div class="data-panel__header"><div><h2>Elegir producción pendiente</h2><p>El plan es una consulta informativa.</p></div><span class="soft-badge">SOLO PRODUCCIONES PENDIENTES</span></div>
+          <div class="filters-row"><label class="filter-field plan-selector"><span>Producción a revisar</span><select id="selector-produccion"><option value="">Cargando producciones…</option></select></label><button type="button" class="button button--primary" id="btn-consultar">Consultar plan</button></div>
+          <p id="estado-seleccion" class="table-status" role="status">Buscando producciones pendientes…</p>
+        </section>
+        <div id="resultado-plan" hidden>
+          <section class="mini-stats plan-stats" aria-label="Resumen de insumos">
+            <div class="mini-stat"><span>Producción seleccionada</span><strong id="stat-id">—</strong></div>
+            <div class="mini-stat"><span>Ingredientes calculados</span><strong id="stat-insumos">—</strong></div>
+            <div class="mini-stat mini-stat--alert"><span>Ingredientes faltantes</span><strong id="stat-faltantes">—</strong></div>
+            <div class="mini-stat"><span>Productos sin receta completa</span><strong id="stat-sin-receta">—</strong></div>
+          </section>
+          <section class="data-panel">
+            <div class="data-panel__header"><div><h2>Requerimiento de ingredientes</h2><p>Compara lo necesario según las recetas con la existencia actual en Oracle.</p></div><span class="status-chip" id="estado-plan">—</span></div>
+            <p class="plan-banner" id="mensaje-plan" role="status">—</p>
+            <div class="table-scroll"><table class="data-table plan-tabla"><thead><tr><th>Ingrediente</th><th>Unidad</th><th class="num">Necesario</th><th class="num">Disponible</th><th class="num">Faltante</th><th>Resultado</th></tr></thead><tbody id="tabla-insumos"></tbody></table></div>
+            <div class="plan-actions"><a class="button button--ghost" href="inventario.html">Consultar inventario</a><button type="button" class="button button--primary" id="btn-iniciar" disabled>Iniciar producción</button></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <dialog id="dialog-confirmar" class="confirm-dialog" aria-labelledby="titulo-confirmar">
+    <h2 id="titulo-confirmar">¿Iniciar producción?</h2>
+    <p id="mensaje-confirmar">Al iniciar se descontarán los ingredientes reales del inventario. La operación no se puede deshacer desde esta pantalla.</p>
+    <p class="form-error" id="error-confirmar" role="alert" hidden></p>
+    <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-confirmar">Cancelar</button><button type="button" class="button button--primary" id="aceptar-confirmar">Sí, iniciar</button></div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

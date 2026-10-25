@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Iniciar sesión | La Migaja De San Carlos</title>
+  <link rel="icon" href="./assets/pan-logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./css/styles.css" />
+  <script type="module" src="./js/login.js"></script>
+</head>
+<body class="login-page">
+  <div class="login-shell">
+    <section class="login-art" aria-label="Presentación de La Migaja De San Carlos">
+      <div class="login-art__grain" aria-hidden="true"></div>
+      <div class="login-art__top">
+        <span class="login-art__eyebrow">Sistema de gestión integral</span>
+        <img class="login-art__logo" src="./assets/pan-logo.svg" alt="" width="68" height="68" />
+      </div>
+      <div class="login-art__body">
+        <div class="illustration" aria-hidden="true">
+          <div class="illustration__sun"></div>
+          <div class="illustration__tray"></div>
+          <div class="illustration__loaf illustration__loaf--left"></div>
+          <div class="illustration__loaf illustration__loaf--center"></div>
+          <div class="illustration__loaf illustration__loaf--right"></div>
+        </div>
+        <p class="login-art__kicker">Tradición que se organiza</p>
+        <h1>El corazón de la panadería, en un solo lugar.</h1>
+        <p>Pedidos, producción, inventario y despachos conectados para trabajar con más claridad.</p>
+      </div>
+    </section>
+
+    <main class="login-main">
+      <img class="login-umg-logo" src="./assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="88" height="88" />
+      <div class="login-form-wrap">
+        <div class="brand-mobile">
+          <img src="./assets/pan-logo.svg" alt="" width="44" height="44" />
+          <span>La Migaja De San Carlos</span>
+        </div>
+        <div class="login-heading">
+          <span class="eyebrow">BIENVENIDO DE NUEVO</span>
+          <h2>Iniciar sesión</h2>
+          <p>Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
+        </div>
+
+        <div id="login-notice" class="notice" role="status" hidden></div>
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="usuario">Nombre de usuario</label>
+            <input id="usuario" name="usuario" type="text" autocomplete="username" placeholder="Ej. central" maxlength="80" required />
+          </div>
+          <div class="field">
+            <label for="contrasena">Contraseña</label>
+            <div class="password-wrap">
+              <input id="contrasena" name="contrasena" type="password" autocomplete="current-password" placeholder="Ingresa tu contraseña" required />
+              <button id="toggle-password" class="password-toggle" type="button" aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
+            </div>
+          </div>
+          <button id="login-submit" class="button button--primary button--full" type="submit">
+            <span id="login-submit-text">Ingresar al sistema</span>
+            <span class="button-arrow" aria-hidden="true">→</span>
+          </button>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

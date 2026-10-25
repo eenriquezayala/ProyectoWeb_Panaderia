@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Usuarios | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  <script type="module" src="../js/usuarios.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal"><div class="sidebar__brand"><img src="../assets/pan-logo.svg" alt="" width="44" height="44" /><div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div></div><div class="sidebar__section-label">ESPACIO DE TRABAJO</div><nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav><div class="sidebar__bottom"><button type="button" class="sidebar__logout" id="logout-sidebar">↪ Cerrar sesión</button></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar"><div class="topbar__left"><button type="button" class="menu-toggle" id="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button><div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Usuarios</strong></div></div><div class="topbar__right"><span class="topbar__date" id="fecha-actual"></span><img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" /></div></header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading"><div><p class="eyebrow">ADMINISTRACIÓN</p><h1>Usuarios del sistema</h1><p id="usuario-actual" class="workspace__subtitle"></p></div><div class="workspace__heading-actions"><button type="button" class="button button--ghost" id="btn-recargar">↻ Actualizar</button><button type="button" class="button button--primary" id="btn-nuevo">＋ Crear usuario</button></div></section>
+        <div class="mini-stats"><div class="mini-stat"><span>Usuarios registrados</span><strong id="total-usuarios">—</strong></div><div class="mini-stat"><span>Activos</span><strong id="total-activos">—</strong></div><div class="mini-stat"><span>Personal de sucursales</span><strong id="total-sucursal">—</strong></div><div class="mini-stat"><span>Producción</span><strong id="total-produccion">—</strong></div></div>
+        <section class="data-panel" aria-labelledby="titulo-tabla"><div class="data-panel__header"><div><h2 id="titulo-tabla">Personal registrado</h2><p>Consulta de cuentas y creación de nuevos accesos.</p></div><span class="soft-badge">Solo administrador</span></div><div class="filters-row"><label class="filter-field filter-field--search"><span>Buscar</span><input id="buscar" type="search" placeholder="Usuario, nombre o sucursal" autocomplete="off" /></label><label class="filter-field"><span>Rol</span><select id="filtro-rol"><option value="">Todos los roles</option><option value="ADMINISTRADOR">Administrador</option><option value="PRODUCCION">Producción</option><option value="SUCURSAL">Sucursal</option></select></label><label class="filter-field"><span>Estado</span><select id="filtro-estado"><option value="">Todos</option><option value="1">Activo</option><option value="0">Inactivo</option></select></label></div><p class="table-status" role="status" id="estado-carga">Cargando usuarios…</p><div class="table-scroll"><table class="data-table"><thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Sucursal</th><th>Estado</th></tr></thead><tbody id="tabla-usuarios"></tbody></table></div><div class="panel-footer" id="conteo-filtrado"></div></section>
+      </main>
+    </div>
+  </div>
+  <dialog class="form-dialog" id="dialog-usuario" aria-labelledby="titulo-dialogo">
+    <form id="form-usuario" novalidate>
+      <div class="form-dialog__header"><div><p class="eyebrow">NUEVA CUENTA</p><h2 id="titulo-dialogo">Crear usuario</h2></div><button type="button" class="dialog-close" id="cerrar-dialogo" aria-label="Cerrar">×</button></div><p class="form-dialog__subtitle">La contraseña se encriptara</p>
+      <div class="form-grid"><label class="form-field"><span>Usuario <b>*</b></span><input name="usuario" id="nuevo-usuario" autocomplete="off" maxlength="50" required placeholder="chiva" /></label><label class="form-field"><span>Nombre completo <b>*</b></span><input name="nombre" id="nuevo-nombre" maxlength="120" required placeholder="Encargado de sucursal" /></label><label class="form-field"><span>Contraseña <b>*</b></span><input name="contrasena" id="nueva-clave" type="password" autocomplete="new-password" required minlength="12" placeholder="Mínimo 12 caracteres" /></label><label class="form-field"><span>Rol <b>*</b></span><select name="idRol" id="nuevo-rol" required><option value="">Seleccionar rol</option></select></label><label class="form-field" id="grupo-sucursal" hidden><span>Sucursal <b>*</b></span><select name="idSucursal" id="nueva-sucursal"><option value="">Seleccionar sucursal</option></select></label></div>
+      <p class="form-error" id="error-usuario" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-dialogo">Cancelar</button><button type="submit" class="button button--primary" id="guardar-usuario">Crear usuario</button></div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

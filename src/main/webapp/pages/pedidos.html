@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pedidos | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script type="module" src="../js/pedidos.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand"><img src="../assets/pan-logo.svg" alt="" width="44" height="44"><div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div></div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom"><button type="button" id="logout-sidebar" class="sidebar__logout">↪ Cerrar sesión</button></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar"><div class="topbar__left"><button type="button" id="menu-toggle" class="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button><div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Pedidos</strong></div></div><div class="topbar__right"><span id="fecha-actual" class="topbar__date"></span><img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" /></div></header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading">
+          <div><p class="eyebrow">SOLICITUDES DE LAS SUCURSALES</p><h1>Gestión de pedidos</h1><p class="workspace__subtitle" id="usuario-actual"></p></div>
+          <div class="workspace__heading-actions"><button type="button" class="button button--ghost" id="btn-recargar">↻ Actualizar</button><button type="button" class="button button--primary" id="btn-nuevo">＋ Nuevo pedido</button></div>
+        </section>
+        <div class="pedido-modulo--readonly" id="aviso-lectura" hidden>Tu perfil de Producción puede consultar los pedidos de todas las sucursales, pero no crearlos ni modificarlos.</div>
+        <section class="mini-stats" aria-label="Indicadores de pedidos">
+          <div class="mini-stat"><span id="etiqueta-total">Pedidos registrados</span><strong id="stat-total">—</strong></div>
+          <div class="mini-stat"><span>En borrador</span><strong id="stat-borrador">—</strong></div>
+          <div class="mini-stat"><span>Enviados</span><strong id="stat-enviado">—</strong></div>
+          <div class="mini-stat"><span>Listos o despachados</span><strong id="stat-listos">—</strong></div>
+        </section>
+        <section class="data-panel" aria-labelledby="titulo-pedidos">
+          <div class="data-panel__header"><div><h2 id="titulo-pedidos">Solicitudes registradas</h2><p id="descripcion-listado">Consulta los pedidos, agrega panes a un borrador y envía las solicitudes listas.</p></div><span class="soft-badge" id="alcance-datos">PEDIDOS AUTORIZADOS</span></div>
+          <div class="filters-row"><label class="filter-field filter-field--search"><span>Buscar pedido</span><input id="buscar" type="search" autocomplete="off" placeholder="ID, sucursal u observaciones"></label><label class="filter-field"><span>Estado</span><select id="filtro-estado"><option value="">Todos los estados</option><option value="BORRADOR">Borrador</option><option value="ENVIADO">Enviado</option><option value="LISTO">Listo</option><option value="DESPACHADO">Despachado</option><option value="RECIBIDO">Recibido</option></select></label></div>
+          <p class="table-status" id="estado-carga" role="status">Consultando pedidos de Oracle…</p>
+          <div class="table-scroll"><table class="data-table pedido-tabla"><thead><tr><th>Pedido</th><th>Sucursal</th><th>Fecha requerida</th><th>Estado</th><th>Observaciones</th><th>Acciones</th></tr></thead><tbody id="tabla-pedidos"></tbody></table></div>
+          <div class="panel-footer" id="conteo-filtrado">—</div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="dialog-nuevo" class="form-dialog" aria-labelledby="titulo-nuevo">
+    <form id="form-nuevo" novalidate>
+      <div class="form-dialog__header"><div><p class="eyebrow">NUEVA SOLICITUD</p><h2 id="titulo-nuevo">Crear pedido</h2></div><button type="button" class="dialog-close" id="cerrar-nuevo" aria-label="Cerrar">×</button></div>
+      <p class="form-dialog__subtitle">El pedido se creará como BORRADOR. Después podrás agregar panes y enviarlo. El usuario responsable se obtiene automatico</p>
+      <div class="form-grid">
+        <label class="form-field form-field--wide" id="campo-sucursal" hidden><span>Sucursal destino <b>*</b></span><select id="nuevo-sucursal"><option value="">Seleccionar sucursal…</option></select></label>
+        <label class="form-field"><span>Fecha requerida <b>*</b></span><input id="nuevo-fecha" type="date" required></label>
+        <label class="form-field form-field--wide"><span>Observaciones (opcional)</span><textarea id="nuevo-observaciones" rows="3" maxlength="500" placeholder="Ej. Solicitud para el turno de mañana"></textarea></label>
+      </div>
+      <p class="small-note" id="nota-sucursal">La sucursal se obtiene automáticamente de tu sesión.</p>
+      <p class="form-error" id="error-nuevo" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-nuevo">Cancelar</button><button type="submit" class="button button--primary" id="guardar-nuevo">Crear pedido</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dialog-detalle" class="form-dialog form-dialog--wide" aria-labelledby="titulo-detalle">
+    <div class="form-dialog__header"><div><p class="eyebrow">CONTENIDO DE LA SOLICITUD</p><h2 id="titulo-detalle">Detalle del pedido</h2></div><button type="button" class="dialog-close" id="cerrar-detalle" aria-label="Cerrar">×</button></div>
+    <p class="form-dialog__subtitle" id="descripcion-detalle">—</p>
+    <div class="pedido-detail-summary"><span>Sucursal: <strong id="detalle-sucursal">—</strong></span><span>Fecha requerida: <strong id="detalle-fecha">—</strong></span><span>Estado: <strong id="detalle-estado">—</strong></span></div>
+    <p class="table-status" id="detalle-carga" role="status">Consultando productos…</p>
+    <div class="table-scroll"><table class="data-table"><thead><tr><th>Pan terminado</th><th class="num">Mañana</th><th class="num">Resto</th><th class="num">Tarde</th><th class="num">Total</th></tr></thead><tbody id="tabla-detalle"></tbody></table></div>
+    <div class="pedido-total">Total solicitado <strong id="detalle-total">0</strong> panes</div>
+    <p class="pedido-help pedido-detalle-nota" id="detalle-observaciones"></p>
+    <div class="dialog-actions"><button type="button" class="button button--ghost" id="cerrar-detalle-pie">Cerrar</button><button type="button" class="button button--ghost" id="btn-detalle-agregar" hidden>＋ Agregar pan</button><button type="button" class="button button--primary" id="btn-detalle-enviar" hidden>Enviar pedido</button></div>
+  </dialog>
+
+  <dialog id="dialog-agregar" class="form-dialog" aria-labelledby="titulo-agregar">
+    <form id="form-agregar" novalidate>
+      <div class="form-dialog__header"><div><p class="eyebrow">ARMADO DE PEDIDO</p><h2 id="titulo-agregar">Agregar pan</h2></div><button type="button" class="dialog-close" id="cerrar-agregar" aria-label="Cerrar">×</button></div>
+      <p class="form-dialog__subtitle" id="subtitulo-agregar">Selecciona un pan final e indica las cantidades por turno.</p>
+      <div class="form-grid">
+        <label class="form-field form-field--wide"><span>Producto terminado <b>*</b></span><select id="agregar-producto" required><option value="">Seleccionar pan…</option></select></label>
+        <label class="form-field"><span>Mañana</span><input type="number" id="agregar-manana" min="0" step="1" value="0" required></label>
+        <label class="form-field"><span>Resto</span><input type="number" id="agregar-resto" min="0" step="1" value="0" required></label>
+        <label class="form-field"><span>Tarde</span><input type="number" id="agregar-tarde" min="0" step="1" value="0" required></label>
+      </div>
+      <div class="inventory-preview"><span>Total a solicitar:</span><strong id="total-agregar">0</strong><span>panes</span></div>
+      <p class="form-error" id="error-agregar" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-agregar">Cancelar</button><button type="submit" class="button button--primary" id="guardar-agregar">Agregar pan</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dialog-enviar" class="confirm-dialog" aria-labelledby="titulo-enviar">
+    <h2 id="titulo-enviar">Confirmar envío</h2>
+    <p id="mensaje-enviar">Al enviar este pedido dejará de estar en borrador y no se podrán agregar más panes.</p>
+    <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-enviar">Cancelar</button><button type="button" class="button button--primary" id="confirmar-enviar">Sí, enviar pedido</button></div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

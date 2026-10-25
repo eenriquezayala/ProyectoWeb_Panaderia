@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Inicio | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  <script type="module" src="../js/dashboard.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand">
+        <img src="../assets/pan-logo.svg" alt="" width="44" height="44" />
+        <div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div>
+      </div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom">
+        <button class="sidebar__logout" type="button" id="logout-sidebar"><span aria-hidden="true">↪</span> Cerrar sesión</button>
+      </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button type="button" class="menu-toggle" id="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button>
+          <div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Inicio</strong></div>
+        </div>
+        <div class="topbar__right">
+          <span class="topbar__date" id="fecha-actual"></span>
+          <img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" />
+        </div>
+      </header>
+      <main class="dashboard" id="dashboard-main">
+        <section class="hero">
+          <div class="hero__copy">
+            <div class="hero__eyebrow"><span class="hero__dot"></span> PANEL PRINCIPAL</div>
+            <h1 id="saludo">Bienvenido a La Migaja De San Carlos</h1>
+            <p id="descripcion-rol">Estamos preparando tu espacio de trabajo.</p>
+            <div class="hero__tags">
+              <span class="pill" id="badge-rol">Rol</span>
+              <span class="pill pill--light" id="badge-sucursal" hidden></span>
+            </div>
+          </div>
+          <div class="hero__illustration" aria-hidden="true">
+            <div class="hero__sun"></div><div class="hero__plate"></div>
+            <div class="hero__bread hero__bread--1"></div>
+            <div class="hero__bread hero__bread--2"></div>
+          </div>
+        </section>
+
+        <section class="dashboard__section" aria-labelledby="resumen-titulo">
+          <div class="section-heading">
+            <div><p class="eyebrow">DATOS DEL SISTEMA</p><h2 id="resumen-titulo">Resumen general</h2></div>
+            <button class="button button--ghost" id="actualizar-resumen" type="button">↻ Actualizar</button>
+          </div>
+          <div class="stats-grid" id="stats-grid">
+            <div class="stat-card stat-card--skeleton"></div><div class="stat-card stat-card--skeleton"></div>
+            <div class="stat-card stat-card--skeleton"></div><div class="stat-card stat-card--skeleton"></div>
+          </div>
+          <p id="stats-status" class="section-note" role="status"></p>
+        </section>
+
+        <section class="dashboard__section" aria-labelledby="modulos-titulo">
+          <div class="section-heading"><div><p class="eyebrow">ACCESOS</p><h2 id="modulos-titulo">Tus módulos</h2></div></div>
+          <div id="modules-grid" class="modules-grid"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

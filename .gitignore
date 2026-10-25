@@ -1,0 +1,31 @@
+
+# Credenciales privadas
+.env
+.env.*
+!.env.example
+
+# Maven
+target/
+*.class
+*.war
+
+# NetBeans
+nbproject/private/
+build/
+dist/
+
+# Visual Studio Code
+.vscode/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+*.backup
+*.dmp
+.DS_Store
+Thumbs.db

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventario | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script type="module" src="../js/inventario.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand"><img src="../assets/pan-logo.svg" alt="" width="44" height="44"><div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div></div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom"><button type="button" id="logout-sidebar" class="sidebar__logout">↪ Cerrar sesión</button></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar"><div class="topbar__left"><button type="button" id="menu-toggle" class="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button><div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Inventario</strong></div></div><div class="topbar__right"><span id="fecha-actual" class="topbar__date"></span><img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50" /></div></header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading"><div><p class="eyebrow">CONTROL DE EXISTENCIAS</p><h1>Inventario y movimientos</h1><p class="workspace__subtitle" id="usuario-actual"></p></div>
+          <div class="workspace__heading-actions"><button type="button" class="button button--ghost" id="btn-recargar">↻ Actualizar</button><button type="button" class="button button--primary" id="btn-nuevo">＋ Registrar movimiento</button></div>
+        </section>
+        
+<section class="mini-stats" aria-label="Indicadores de inventario">
+  <div class="mini-stat"><span>Productos con inventario</span><strong id="total-productos">—</strong></div>
+  <div class="mini-stat"><span>Insumos</span><strong id="total-insumos">—</strong></div>
+  <div class="mini-stat"><span>Panes terminados</span><strong id="total-finales">—</strong></div>
+  <div class="mini-stat mini-stat--alert"><span>Existencias bajas</span><strong id="total-bajos">—</strong></div>
+</section>
+<section class="data-panel" aria-labelledby="titulo-inventario">
+  <div class="data-panel__header"><div><h2 id="titulo-inventario">Existencias actuales</h2><p>Registra entradas o ajustes y revisa el historial de cada producto.</p></div><span class="soft-badge">MOVIMIENTOS</span></div>
+  <div class="filters-row"><label class="filter-field filter-field--search"><span>Buscar producto</span><input type="search" id="buscar" placeholder="Código o nombre" autocomplete="off"></label><label class="filter-field"><span>Tipo</span><select id="filtro-tipo"><option value="">Todos</option><option value="INSUMO">Ingredientes</option><option value="FINAL">Panes terminados</option></select></label><label class="filter-field"><span>Nivel</span><select id="filtro-estado"><option value="">Todos</option><option value="BAJO">Bajo</option><option value="NORMAL">Normal</option></select></label></div>
+  <p class="table-status" id="estado-carga" role="status">Cargando existencias…</p>
+  <div class="table-scroll"><table class="data-table"><thead><tr><th>Producto</th><th>Tipo</th><th class="num">Existencia</th><th class="num">Mínimo</th><th>Unidad</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tabla-inventario"></tbody></table></div>
+  <div class="panel-footer" id="conteo-filtrado">—</div>
+</section>
+
+      </main>
+    </div>
+  </div>
+  
+<dialog id="dialog-movimiento" class="form-dialog" aria-labelledby="titulo-movimiento">
+  <form id="form-movimiento" novalidate>
+    <div class="form-dialog__header"><div><p class="eyebrow">MOVIMIENTOS DE INVENTARIO</p><h2 id="titulo-movimiento">Registrar entrada</h2></div><button class="dialog-close" id="cerrar-movimiento" type="button" aria-label="Cerrar">×</button></div>
+    <p class="form-dialog__subtitle" id="subtitulo-movimiento">El responsable se obtiene automáticamente del token JWT.</p>
+    <div class="form-grid"><label class="form-field form-field--wide"><span>Producto <b>*</b></span><select id="movimiento-producto" required><option value="">Seleccionar producto…</option></select></label>
+      <label class="form-field"><span id="etiqueta-cantidad">Cantidad a ingresar</span><input id="movimiento-cantidad" type="number" min="0.0001" step="any" placeholder="Ej. 5" required></label>
+      <div class="inventory-preview" role="status"><span>Existencia actual</span><strong id="existencia-previa">—</strong><span id="unidad-previa">—</span></div>
+    </div>
+    <p class="form-error" id="error-movimiento" role="alert" hidden></p>
+    <div class="dialog-actions"><button class="button button--ghost" id="cancelar-movimiento" type="button">Cancelar</button><button class="button button--primary" id="guardar-movimiento" type="submit">Registrar entrada</button></div>
+  </form>
+</dialog>
+<dialog id="dialog-confirmar-ajuste" class="confirm-dialog" aria-labelledby="titulo-confirmar-ajuste"><h2 id="titulo-confirmar-ajuste">Confirmar ajuste</h2><p id="mensaje-confirmar-ajuste"></p><div class="dialog-actions"><button class="button button--ghost" id="cancelar-ajuste" type="button">Cancelar</button><button class="button button--primary" id="confirmar-ajuste" type="button">Confirmar ajuste</button></div></dialog>
+<dialog id="dialog-historial" class="form-dialog form-dialog--wide" aria-labelledby="titulo-historial">
+  <div class="form-dialog__header"><div><p class="eyebrow">TRAZABILIDAD</p><h2 id="titulo-historial">Movimientos del producto</h2></div><button class="dialog-close" id="cerrar-historial" type="button" aria-label="Cerrar">×</button></div>
+  <p class="form-dialog__subtitle" id="historial-descripcion">—</p>
+  <p class="table-status" id="historial-estado" role="status">Cargando movimientos…</p>
+  <div class="table-scroll"><table class="data-table"><thead><tr><th>Fecha</th><th>Movimiento</th><th class="num">Cantidad</th><th class="num">Anterior</th><th class="num">Nuevo</th></tr></thead><tbody id="tabla-movimientos"></tbody></table></div>
+  <div class="dialog-actions"><button class="button button--ghost" id="cerrar-historial-pie" type="button">Cerrar</button></div>
+</dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
