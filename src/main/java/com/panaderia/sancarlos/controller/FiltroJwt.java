@@ -22,7 +22,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
-/** Valida el JWT, la cuenta y el rol activo, y aplica permisos por ruta. */
+/**
+ * Valida el JWT, la cuenta y el rol activo, y aplica permisos por ruta.
+ */
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class FiltroJwt implements ContainerRequestFilter {
@@ -108,14 +110,17 @@ public class FiltroJwt implements ContainerRequestFilter {
             public java.security.Principal getUserPrincipal() {
                 return sesion;
             }
+
             @Override
             public boolean isUserInRole(String rol) {
                 return rol != null && sesion.getRol().equalsIgnoreCase(rol);
             }
+
             @Override
             public boolean isSecure() {
                 return anterior != null && anterior.isSecure();
             }
+
             @Override
             public String getAuthenticationScheme() {
                 return "Bearer";
@@ -134,8 +139,7 @@ public class FiltroJwt implements ContainerRequestFilter {
         }
 
         // Catalogos publicos para cualquier cuenta autenticada.
-        if ("GET".equals(metodo) && (
-                "usuarios/roles".equals(ruta)
+        if ("GET".equals(metodo) && ("usuarios/roles".equals(ruta)
                 || "usuarios/sucursales".equals(ruta)
                 || "productos".equals(ruta)
                 || ruta.startsWith("productos/"))) {
@@ -143,19 +147,30 @@ public class FiltroJwt implements ContainerRequestFilter {
         }
 
         if ("PRODUCCION".equals(rol)) {
-            if (ruta.equals("recetas") || ruta.startsWith("recetas/")) return true;
-            if (ruta.equals("inventario") || ruta.startsWith("inventario/")) return true;
-            if (ruta.equals("producciones") || ruta.startsWith("producciones/")) return true;
+            if (ruta.equals("recetas") || ruta.startsWith("recetas/")) {
+                return true;
+            }
+            if (ruta.equals("inventario") || ruta.startsWith("inventario/")) {
+                return true;
+            }
+            if (ruta.equals("producciones") || ruta.startsWith("producciones/")) {
+                return true;
+            }
             // PRODUCCION: solo las cuatro operaciones existentes de despachos.
             if ("GET".equals(metodo)
                     && ("despachos".equals(ruta)
-                    || ruta.matches("despachos/[0-9]+/detalle"))) return true;
-            if ("POST".equals(metodo) && "despachos".equals(ruta)) return true;
+                    || ruta.matches("despachos/[0-9]+/detalle"))) {
+                return true;
+            }
+            if ("POST".equals(metodo) && "despachos".equals(ruta)) {
+                return true;
+            }
             if ("PUT".equals(metodo)
-                    && ruta.matches("despachos/[0-9]+/recibir")) return true;
+                    && ruta.matches("despachos/[0-9]+/recibir")) {
+                return true;
+            }
             // PRODUCCION consulta pedidos; no los edita.
-            return "GET".equals(metodo) && (
-                    "pedidos".equals(ruta)
+            return "GET".equals(metodo) && ("pedidos".equals(ruta)
                     || ruta.matches("pedidos/[0-9]+/detalle"));
         }
 
@@ -175,6 +190,38 @@ public class FiltroJwt implements ContainerRequestFilter {
                     && ruta.matches("pedidos/[0-9]+/enviar");
         }
 
+        if ("VENDEDOR_RUTA".equals(rol)) {
+
+            // Consultar solamente sus rutas.
+            if ("GET".equals(metodo)
+                    && "rutas".equals(ruta)) {
+                return true;
+            }
+
+            // Reportar una entrega desde Android.
+            // El Controller obtiene el vendedor del JWT
+            // y el Manager comprueba que la ruta le pertenece.
+            if ("PUT".equals(metodo)
+                    && ruta.matches(
+                            "rutas/[0-9]+/reportar-entrega")) {
+                return true;
+            }
+
+// Registrar el dispositivo Android para notificaciones FCM.
+            if ("POST".equals(metodo)
+                    && "dispositivos-fcm/registrar".equals(ruta)) {
+                return true;
+            }
+
+            // Desvincular el dispositivo al cerrar sesion.
+            if ("POST".equals(metodo)
+                    && "dispositivos-fcm/desvincular".equals(ruta)) {
+                return true;
+            }
+            // Ninguna otra operacion esta autorizada.
+            return false;
+        }
+
         // Por defecto, denegar.
         return false;
     }
@@ -187,15 +234,18 @@ public class FiltroJwt implements ContainerRequestFilter {
                 + "AND (U.ID_SUCURSAL IS NULL OR S.ESTADO = 1) "
                 + "AND (R.NOMBRE <> 'SUCURSAL' OR U.ID_SUCURSAL IS NOT NULL)";
 
-        try (Connection cn = ConexionBD.obtenerConexion();
-                PreparedStatement ps = cn.prepareStatement(sql)) {
+        try (Connection cn = ConexionBD.obtenerConexion(); PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setInt(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
+                if (!rs.next()) {
+                    return null;
+                }
                 int idSucursal = rs.getInt("ID_SUCURSAL");
                 Integer sucursal = rs.wasNull() ? null : idSucursal;
                 String rol = rs.getString("ROL");
-                if (rol == null) return null;
+                if (rol == null) {
+                    return null;
+                }
                 return new SesionAutenticada(idUsuario,
                         rs.getString("USUARIO"),
                         rol.trim().toUpperCase(Locale.ROOT), sucursal);

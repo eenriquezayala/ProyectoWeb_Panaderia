@@ -1,0 +1,19 @@
+/* Complemento de Gestión de rutas. No modifica estilos globales. */
+.rutas-guide { display: flex; align-items: flex-start; gap: 17px; margin: 0 0 22px; padding: 19px 23px; border: 1px solid #ebddcb; border-radius: 17px; background: linear-gradient(110deg, #fff8ec, #fffdfa); }
+.rutas-guide__icon { display: grid; place-items: center; flex: 0 0 43px; width: 43px; height: 43px; border-radius: 12px; color: #7d512f; font-size: 27px; background: #f3e0c5; }
+.rutas-guide strong { color: #563725; font-size: 14px; }
+.rutas-guide p { color: #887361; font-size: 12px; line-height: 1.65; margin: 6px 0 0; }
+.rutas-tabla { min-width: 930px; }
+.rutas-tabla td:nth-child(2), .rutas-tabla td:nth-child(6) { white-space: nowrap; }
+.rutas-subline { display: block; margin-top: 4px; color: #998979; font-size: 11px; }
+.rutas-id { color: #483123; font-size: 13px; font-weight: 750; }
+.rutas-acciones { min-width: 125px; }
+.rutas-alerta { margin-top: 19px; padding: 13px 15px; color: #80582b; background: #fff7e8; border: 1px solid #ead6b2; border-radius: 11px; font-size: 12px; line-height: 1.6; }
+.rutas-footnote { color: #988777; font-size: 12px; line-height: 1.65; margin: 17px 6px 0; }
+.rutas-tabla .status-chip { white-space: nowrap; }
+.rutas-tabla .status-chip--waiting { background: #fff4df; color: #966326; }
+.rutas-tabla .status-chip--ready { background: #e8f4f1; color: #21685d; }
+.rutas-tabla .status-chip--done { background: #e8f5eb; color: #2b7547; }
+.rutas-tabla .status-chip--off { background: #f5ece8; color: #876358; }
+.rutas-tag { color: #968273; font-size: 11px; }
+@media (max-width: 610px) { .rutas-guide { padding: 16px; } .rutas-guide__icon { flex-basis: 35px; width: 35px; height: 35px; font-size: 22px; } }

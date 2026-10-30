@@ -10,6 +10,7 @@ export const MODULOS = [
   { id: 'producciones', etiqueta: 'Producción', icono: '◈', grupos: 'Operación', roles: ['ADMINISTRADOR','PRODUCCION'], pagina: 'producciones.html', descripcion: 'Programación y fabricación.' },
   { id: 'plan', etiqueta: 'Planificación de insumos', icono: '◫', grupos: 'Operación', roles: ['ADMINISTRADOR','PRODUCCION'], pagina: 'planificacion.html', descripcion: 'Necesidades y faltantes.' },
   { id: 'despachos', etiqueta: 'Despachos', icono: '⇥', grupos: 'Operación', roles: ['ADMINISTRADOR','PRODUCCION','SUCURSAL'], pagina: 'despachos.html', descripcion: 'Envíos y recepción de pedidos.' },
+  { id: 'rutas', etiqueta: 'Gestión de rutas', icono: '↗', grupos: 'Operación', roles: ['ADMINISTRADOR'], pagina: 'rutas.html', descripcion: 'Rutas, vendedores y vehículos de entrega.' },
   { id: 'reportes', etiqueta: 'Reportes', icono: '▦', grupos: 'Administración', roles: ['ADMINISTRADOR'], pagina: 'reportes.html', descripcion: 'Indicadores y reportes gerenciales.' }
 ];
 

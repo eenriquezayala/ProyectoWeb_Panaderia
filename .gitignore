@@ -14,6 +14,14 @@ nbproject/private/
 build/
 dist/
 
+nbproject/private/
+**/firebase-admin.json
+**/*service-account*.json
+**/*.pem
+**/*.key
+**/*.jks
+**/*.keystore
+
 # Visual Studio Code
 .vscode/
 

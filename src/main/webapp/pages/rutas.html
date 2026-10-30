@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestión de rutas | La Migaja De San Carlos</title>
+  <link rel="icon" href="../assets/pan-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/rutas.css">
+  <script type="module" src="../js/rutas.js"></script>
+</head>
+<body class="app-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <div class="sidebar__brand">
+        <img src="../assets/pan-logo.svg" alt="" width="44" height="44">
+        <div><strong>La Migaja De San Carlos</strong><span>Gestión de panadería</span></div>
+      </div>
+      <div class="sidebar__section-label">ESPACIO DE TRABAJO</div>
+      <nav id="main-navigation" class="sidebar__navigation" aria-label="Módulos autorizados"></nav>
+      <div class="sidebar__bottom"><button type="button" id="logout-sidebar" class="sidebar__logout">↪ Cerrar sesión</button></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+    <div class="app-content">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button type="button" class="menu-toggle" id="menu-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menú">☰</button>
+          <div class="breadcrumb">La Migaja De San Carlos <span>/</span> <strong>Gestión de rutas</strong></div>
+        </div>
+        <div class="topbar__right">
+          <span class="topbar__date" id="fecha-actual"></span>
+          <img class="topbar__umg-logo" src="../assets/logoUMG.png" alt="Universidad Mariano Gálvez de Guatemala" width="50" height="50">
+        </div>
+      </header>
+      <main class="dashboard workspace">
+        <section class="workspace__heading">
+          <div>
+            <p class="eyebrow">DISTRIBUCIÓN Y ENTREGA</p>
+            <h1>Gestión de rutas</h1>
+            <p class="workspace__subtitle" id="usuario-actual"></p>
+          </div>
+          <div class="workspace__heading-actions">
+            <button type="button" id="btn-recargar" class="button button--ghost">↻ Actualizar</button>
+            <button type="button" id="btn-nuevo" class="button button--primary">＋ Registrar ruta</button>
+          </div>
+        </section>
+        <div class="rutas-guide" role="note">
+          <span class="rutas-guide__icon" aria-hidden="true">↗</span>
+          <div><strong>De despacho a entrega</strong><p>Registra una ruta de un despacho de Oracle en estado DESPACHADO. Luego asigna el vendedor y el vehículo. El reporte de entrega se realiza desde Android.</p></div>
+        </div>
+        <section class="mini-stats" aria-label="Resumen de rutas">
+          <div class="mini-stat"><span>Total de rutas</span><strong id="stat-total">—</strong></div>
+          <div class="mini-stat"><span>Pendientes de vendedor</span><strong id="stat-pendientes">—</strong></div>
+          <div class="mini-stat"><span>Pendientes de vehículo</span><strong id="stat-vehiculos">—</strong></div>
+          <div class="mini-stat"><span>Entregas reportadas</span><strong id="stat-entregadas">—</strong></div>
+        </section>
+        <section class="data-panel" aria-labelledby="titulo-listado">
+          <div class="data-panel__header">
+            <div><h2 id="titulo-listado">Rutas registradas</h2><p>Consulta el estado en Firestore y realiza las asignaciones autorizadas.</p></div>
+            <span class="soft-badge">SOLO ADMINISTRADOR</span>
+          </div>
+          <div class="filters-row">
+            <label class="filter-field filter-field--search"><span>Buscar ruta</span><input id="buscar" type="search" autocomplete="off" placeholder="Despacho, vendedor, vehículo o estado"></label>
+            <label class="filter-field"><span>Estado</span>
+              <select id="filtro-estado">
+                <option value="">Todos</option>
+                <option value="PENDIENTE_ASIGNACION">Pendiente de asignación</option>
+                <option value="PENDIENTE_VEHICULO">Pendiente de vehículo</option>
+                <option value="LISTA_PARA_ENTREGA">Lista para entrega</option>
+                <option value="ENTREGA_REPORTADA">Entrega reportada</option>
+              </select>
+            </label>
+          </div>
+          <p class="table-status" id="estado-carga" role="status">Consultando rutas…</p>
+          <div class="table-scroll">
+            <table class="data-table rutas-tabla">
+              <thead><tr><th>Ruta</th><th>Sucursal</th><th>Vendedor</th><th>Vehículo</th><th>Estado</th><th>Versión</th><th>Acción</th></tr></thead>
+              <tbody id="tabla-rutas"></tbody>
+            </table>
+          </div>
+          <div class="panel-footer" id="conteo-filtrado">—</div>
+        </section>
+        <p class="rutas-footnote">La asignación de vendedor puede enviar una notificación FCM. Una entrega reportada no cambia automáticamente el estado de recepción del despacho en Oracle.</p>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="dialog-registro" class="form-dialog" aria-labelledby="titulo-registro">
+    <form id="form-registro" novalidate>
+      <div class="form-dialog__header"><div><p class="eyebrow">NUEVA RUTA</p><h2 id="titulo-registro">Registrar ruta</h2></div><button type="button" class="dialog-close" id="cerrar-registro" aria-label="Cerrar">×</button></div>
+      <p class="form-dialog__subtitle">Solo se permiten despachos de Oracle en estado DESPACHADO que aún no tienen ruta en Firestore.</p>
+      <div class="form-grid">
+        <label class="form-field form-field--wide"><span>Despacho disponible <b>*</b></span><select id="registro-despacho" required><option value="">Consultando despachos…</option></select></label>
+      </div>
+      <p class="small-note" id="ayuda-registro">El registro crea la ruta en estado PENDIENTE_ASIGNACION.</p>
+      <p class="form-error" id="error-registro" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-registro">Cancelar</button><button type="submit" class="button button--primary" id="guardar-registro" disabled>Registrar ruta</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dialog-vendedor" class="form-dialog" aria-labelledby="titulo-vendedor">
+    <form id="form-vendedor" novalidate>
+      <div class="form-dialog__header"><div><p class="eyebrow">PRIMERA ASIGNACIÓN</p><h2 id="titulo-vendedor">Asignar vendedor</h2></div><button type="button" class="dialog-close" id="cerrar-vendedor" aria-label="Cerrar">×</button></div>
+      <p class="form-dialog__subtitle" id="vendedor-contexto">—</p>
+      <div class="form-grid">
+        <label class="form-field form-field--wide"><span>Vendedores disponibles en el catálogo</span><select id="vendedor-select"><option value="">Selecciona un vendedor…</option></select></label>
+        <label class="form-field form-field--wide"><span>O indicar ID de vendedor manualmente</span><input id="vendedor-id" type="number" min="1" step="1" inputmode="numeric" placeholder="Por ejemplo, 43"></label>
+      </div>
+      <p class="small-note" id="ayuda-vendedor">Si escribes un ID, tendrá prioridad sobre la selección. El backend validará el rol, estado y sucursal del vendedor.</p>
+      <div class="rutas-alerta">Al confirmar se asignará la ruta y el backend intentará enviar una notificación FCM al vendedor.</div>
+      <p class="form-error" id="error-vendedor" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-vendedor">Cancelar</button><button type="submit" class="button button--primary" id="guardar-vendedor">Asignar y notificar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dialog-vehiculo" class="form-dialog" aria-labelledby="titulo-vehiculo">
+    <form id="form-vehiculo" novalidate>
+      <div class="form-dialog__header"><div><p class="eyebrow">PREPARAR ENTREGA</p><h2 id="titulo-vehiculo">Asignar vehículo</h2></div><button type="button" class="dialog-close" id="cerrar-vehiculo" aria-label="Cerrar">×</button></div>
+      <p class="form-dialog__subtitle" id="vehiculo-contexto">—</p>
+      <div class="form-grid">
+        <label class="form-field form-field--wide"><span>ID del documento del vehículo en Firestore <b>*</b></span><input id="vehiculo-id" type="text" maxlength="120" autocomplete="off" required placeholder="Ej.: vehiculo_demo_01"></label>
+        <label class="form-field form-field--wide"><span>Versión actual del vehículo en Firestore <b>*</b></span><input id="vehiculo-version" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" required placeholder="Ej.: 3"></label>
+      </div>
+      <p class="small-note">Consulta el campo <strong>version</strong> del documento en <strong>vehiculos</strong> antes de confirmar. El vehículo debe existir, estar activo y estar DISPONIBLE. El servidor comprobará tanto la versión de la ruta como la del vehículo.</p>
+      <p class="form-error" id="error-vehiculo" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-vehiculo">Cancelar</button><button type="submit" class="button button--primary" id="guardar-vehiculo">Confirmar vehículo</button></div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
