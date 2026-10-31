@@ -2,6 +2,12 @@ package com.panaderia.sancarlos.controller;
 
 import com.panaderia.sancarlos.manager.RutaFirestoreManager;
 import com.panaderia.sancarlos.model.SesionAutenticada;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.firebase.cloud.FirestoreClient;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import javax.ws.rs.core.CacheControl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +90,73 @@ public class RutaController {
                     503,
                     "No fue posible consultar las rutas"
             );
+        }
+    }
+
+    /**
+     * Catálogo de vehículos activos y disponibles para el formulario web.
+     * Solo administradores. No permite escribir en Firestore.
+     * Usa Firebase Admin SDK, ya inicializado por el proyecto.
+     */
+    @GET
+    @Path("vehiculos-disponibles")
+    public Response consultarVehiculosDisponibles(
+            @Context SecurityContext seguridad) {
+
+        if (seguridad == null
+                || !(seguridad.getUserPrincipal() instanceof SesionAutenticada)) {
+            return respuestaError(401, "Debes iniciar sesion");
+        }
+        if (!seguridad.isUserInRole("ADMINISTRADOR")) {
+            return respuestaError(403, "No tienes permiso para consultar vehiculos");
+        }
+
+        try {
+            List<Map<String, Object>> vehiculos = new ArrayList<>();
+
+            // Se filtra en Java para evitar la necesidad de índices compuestos.
+            for (DocumentSnapshot doc : FirestoreClient.getFirestore()
+                    .collection("vehiculos").get().get().getDocuments()) {
+
+                if (!Boolean.TRUE.equals(doc.getBoolean("activo"))
+                        || !"DISPONIBLE".equalsIgnoreCase(doc.getString("estado"))) {
+                    continue;
+                }
+                Object numeroVersion = doc.get("version");
+                if (!(numeroVersion instanceof Number)) {
+                    continue;
+                }
+                Number numero = (Number) numeroVersion;
+                long version = numero.longValue();
+                if (version <= 0 || numero.doubleValue() != (double) version) {
+                    continue;
+                }
+                String idVehiculo = doc.getId();
+                if (idVehiculo == null || idVehiculo.isEmpty()
+                        || idVehiculo.length() > 120 || idVehiculo.contains("/")) {
+                    continue;
+                }
+
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("idVehiculo", idVehiculo);
+                item.put("nombre", doc.getString("nombre"));
+                item.put("placa", doc.getString("placa"));
+                item.put("tipo", doc.getString("tipo"));
+                item.put("version", version);
+                vehiculos.add(item);
+            }
+
+            vehiculos.sort(Comparator.comparing(
+                    v -> String.valueOf(v.get("nombre")),
+                    String.CASE_INSENSITIVE_ORDER));
+
+            CacheControl sinCache = new CacheControl();
+            sinCache.setNoStore(true);
+            return Response.ok(vehiculos).cacheControl(sinCache).build();
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al consultar vehiculos disponibles", e);
+            return respuestaError(503, "No fue posible consultar los vehiculos");
         }
     }
 

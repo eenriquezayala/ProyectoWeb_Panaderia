@@ -10,6 +10,7 @@ const dialogVendedor = $('#dialog-vendedor');
 const dialogVehiculo = $('#dialog-vehiculo');
 let rutas = [];
 let despachos = [];
+let vehiculosDisponibles = [];
 let rutaSeleccionada = null;
 let cargando = false;
 let guardando = false;
@@ -225,7 +226,10 @@ async function abrirVendedor(ruta) {
   esconderError('#error-vendedor');
   $('#vendedor-contexto').textContent = `Ruta ${ruta.idRuta} · sucursal ${ruta.sucursal || '—'} · versión ${ruta.version}. Solo se puede asignar una vez.`;
   const select = $('#vendedor-select');
-  select.replaceChildren(new Option('Consultando usuarios…', ''));
+  const boton = $('#guardar-vendedor');
+  select.replaceChildren(new Option('Consultando vendedores…', ''));
+  select.disabled = true;
+  boton.disabled = true;
   dialogVendedor.showModal();
   try {
     const usuarios = await app.api('usuarios');
@@ -238,23 +242,27 @@ async function abrirVendedor(ruta) {
       const etiqueta = u.nombre || u.usuario || 'Vendedor';
       select.add(new Option(`${etiqueta} · ID ${id} · ${u.sucursal || ''}`, String(id)));
     }
-    $('#ayuda-vendedor').textContent = vendedores.length
-      ? 'Selecciona un vendedor o escribe su ID. Si escribes un ID, tiene prioridad. El servidor valida rol, actividad y sucursal.'
-      : 'No se identificaron vendedores en el formato del catálogo. Puedes escribir el ID conocido; el backend validará los permisos y la sucursal.';
-  } catch (_error) {
-    if (dialogVendedor.open) {
-      select.replaceChildren(new Option('Catálogo no disponible (usa el ID)', ''));
-      $('#ayuda-vendedor').textContent = 'No fue posible cargar usuarios. Escribe el ID del vendedor; el backend verificará que sea válido.';
+    if (!vendedores.length) {
+      mostrarError('#error-vendedor', 'No hay vendedores registrados en el catálogo. Registra uno desde Usuarios.');
     }
+    select.disabled = !vendedores.length;
+  } catch (error) {
+    if (dialogVendedor.open) {
+      select.replaceChildren(new Option('No se pudieron cargar vendedores', ''));
+      mostrarError('#error-vendedor', error.message || 'No fue posible consultar los vendedores.');
+    }
+  } finally {
+    if (dialogVendedor.open) boton.disabled = !enteroPositivo(select.value) || select.disabled;
   }
 }
+
 async function asignarVendedor(evento) {
   evento.preventDefault();
   if (guardando || !rutaSeleccionada) return;
   esconderError('#error-vendedor');
   const ruta = rutaSeleccionada;
-  const idVendedor = enteroPositivo($('#vendedor-id').value.trim() || $('#vendedor-select').value);
-  if (!idVendedor) { mostrarError('#error-vendedor', 'Selecciona o ingresa un ID válido de vendedor.'); return; }
+  const idVendedor = enteroPositivo($('#vendedor-select').value);
+  if (!idVendedor) { mostrarError('#error-vendedor', 'Selecciona un vendedor válido del catálogo.'); return; }
   const id = idRuta(ruta);
   const versionEsperada = versionRuta(ruta);
   if (!id || !versionEsperada || estadoRuta(ruta) !== 'PENDIENTE_ASIGNACION') {
@@ -281,22 +289,62 @@ async function asignarVendedor(evento) {
     await cargar();
   }
 }
-function abrirVehiculo(ruta) {
+// La versión se toma exclusivamente del catálogo recibido desde el backend.
+function sincronizarVehiculoSeleccionado() {
+  const id = $('#vehiculo-id').value;
+  const vehiculo = vehiculosDisponibles.find(v => v.idVehiculo === id);
+  const version = enteroPositivo(vehiculo?.version);
+  $('#vehiculo-version').value = version ? String(version) : '';
+  $('#guardar-vehiculo').disabled = guardando || !id || !version;
+}
+
+async function abrirVehiculo(ruta) {
   if (guardando) return;
   rutaSeleccionada = ruta;
+  vehiculosDisponibles = [];
   $('#form-vehiculo').reset();
   esconderError('#error-vehiculo');
   $('#vehiculo-contexto').textContent = `Ruta ${ruta.idRuta} · vendedor ID ${ruta.idVendedor ?? '—'} · versión ${ruta.version}`;
+  const select = $('#vehiculo-id');
+  select.replaceChildren(new Option('Consultando vehículos…', ''));
+  select.disabled = true;
+  $('#guardar-vehiculo').disabled = true;
   dialogVehiculo.showModal();
+  try {
+    // El servidor lee Firestore mediante Firebase Admin SDK; no exponemos credenciales al navegador.
+    const datos = await app.api('rutas/vehiculos-disponibles');
+    if (!dialogVehiculo.open) return;
+    if (!Array.isArray(datos)) throw new Error('La API devolvió un catálogo de vehículos inválido.');
+    vehiculosDisponibles = datos.filter(v =>
+      typeof v?.idVehiculo === 'string' && v.idVehiculo.length > 0 &&
+      enteroPositivo(v.version)
+    );
+    select.replaceChildren(new Option('Selecciona un vehículo…', ''));
+    for (const v of vehiculosDisponibles) {
+      const etiqueta = `${v.nombre || v.idVehiculo} · ${v.placa || 'Sin placa'} · ${v.idVehiculo}`;
+      select.add(new Option(etiqueta, v.idVehiculo));
+    }
+    if (!vehiculosDisponibles.length) {
+      mostrarError('#error-vehiculo', 'No hay vehículos activos y disponibles para asignar.');
+    }
+    select.disabled = !vehiculosDisponibles.length;
+    sincronizarVehiculoSeleccionado();
+  } catch (error) {
+    if (dialogVehiculo.open) {
+      select.replaceChildren(new Option('No se pudieron cargar vehículos', ''));
+      mostrarError('#error-vehiculo', error.message || 'No fue posible consultar los vehículos.');
+    }
+  }
 }
+
 async function asignarVehiculo(evento) {
   evento.preventDefault();
   if (guardando || !rutaSeleccionada) return;
   esconderError('#error-vehiculo');
   const ruta = rutaSeleccionada;
   const idVehiculo = $('#vehiculo-id').value.trim();
-  if (!idVehiculo || idVehiculo.length > 120 || idVehiculo.includes('/')) {
-    mostrarError('#error-vehiculo', 'Ingresa un ID de vehículo válido, sin barras.'); return;
+  if (!idVehiculo || !vehiculosDisponibles.some(v => v.idVehiculo === idVehiculo) || idVehiculo.length > 120 || idVehiculo.includes('/')) {
+    mostrarError('#error-vehiculo', 'Selecciona un vehículo válido del catálogo.'); return;
   }
   const id = idRuta(ruta);
   const versionRutaEsperada = versionRuta(ruta);
@@ -305,7 +353,7 @@ async function asignarVehiculo(evento) {
     mostrarError('#error-vehiculo', 'La ruta no permite asignar un vehículo. Actualiza la tabla.'); return;
   }
   if (!versionVehiculoEsperada) {
-    mostrarError('#error-vehiculo', 'Ingresa la versión actual del vehículo consultada en Firestore (un número entero positivo).');
+    mostrarError('#error-vehiculo', 'No se pudo determinar la versión actual del vehículo. Vuelve a abrir la asignación.');
     return;
   }
   guardando = true;
@@ -323,7 +371,7 @@ async function asignarVehiculo(evento) {
     rutaSeleccionada = null;
     app.notificar(resultado.mensaje || `Vehículo ${idVehiculo} asignado a despacho #${id}.`, 'exito');
   } catch (error) {
-    mostrarError('#error-vehiculo', `${error.message || 'No se pudo confirmar la asignación.'} Verifica el estado de la ruta y el vehículo antes de reintentar.`);
+    mostrarError('#error-vehiculo', `${error.message || 'No se pudo confirmar la asignación.'} Cierra y vuelve a abrir la ventana para consultar versiones actualizadas antes de reintentar.`);
   } finally {
     guardando = false;
     boton.disabled = false;
@@ -338,7 +386,11 @@ $('#filtro-estado').addEventListener('change', pintar);
 $('#btn-nuevo').addEventListener('click', abrirRegistro);
 $('#form-registro').addEventListener('submit', registrarRuta);
 $('#form-vendedor').addEventListener('submit', asignarVendedor);
+$('#vendedor-select').addEventListener('change', () => {
+  $('#guardar-vendedor').disabled = guardando || !enteroPositivo($('#vendedor-select').value);
+});
 $('#form-vehiculo').addEventListener('submit', asignarVehiculo);
+$('#vehiculo-id').addEventListener('change', sincronizarVehiculoSeleccionado);
 for (const [dialogo, nombre] of [
   [dialogRegistro, 'registro'], [dialogVendedor, 'vendedor'], [dialogVehiculo, 'vehiculo']
 ]) {

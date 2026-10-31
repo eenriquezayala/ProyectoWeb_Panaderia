@@ -103,11 +103,8 @@
       <div class="form-dialog__header"><div><p class="eyebrow">PRIMERA ASIGNACIÓN</p><h2 id="titulo-vendedor">Asignar vendedor</h2></div><button type="button" class="dialog-close" id="cerrar-vendedor" aria-label="Cerrar">×</button></div>
       <p class="form-dialog__subtitle" id="vendedor-contexto">—</p>
       <div class="form-grid">
-        <label class="form-field form-field--wide"><span>Vendedores disponibles en el catálogo</span><select id="vendedor-select"><option value="">Selecciona un vendedor…</option></select></label>
-        <label class="form-field form-field--wide"><span>O indicar ID de vendedor manualmente</span><input id="vendedor-id" type="number" min="1" step="1" inputmode="numeric" placeholder="Por ejemplo, 43"></label>
+        <label class="form-field form-field--wide"><span>Vendedor <b>*</b></span><select id="vendedor-select" required><option value="">Selecciona un vendedor…</option></select></label>
       </div>
-      <p class="small-note" id="ayuda-vendedor">Si escribes un ID, tendrá prioridad sobre la selección. El backend validará el rol, estado y sucursal del vendedor.</p>
-      <div class="rutas-alerta">Al confirmar se asignará la ruta y el backend intentará enviar una notificación FCM al vendedor.</div>
       <p class="form-error" id="error-vendedor" role="alert" hidden></p>
       <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-vendedor">Cancelar</button><button type="submit" class="button button--primary" id="guardar-vendedor">Asignar y notificar</button></div>
     </form>
@@ -118,10 +115,10 @@
       <div class="form-dialog__header"><div><p class="eyebrow">PREPARAR ENTREGA</p><h2 id="titulo-vehiculo">Asignar vehículo</h2></div><button type="button" class="dialog-close" id="cerrar-vehiculo" aria-label="Cerrar">×</button></div>
       <p class="form-dialog__subtitle" id="vehiculo-contexto">—</p>
       <div class="form-grid">
-        <label class="form-field form-field--wide"><span>ID del documento del vehículo en Firestore <b>*</b></span><input id="vehiculo-id" type="text" maxlength="120" autocomplete="off" required placeholder="Ej.: vehiculo_demo_01"></label>
-        <label class="form-field form-field--wide"><span>Versión actual del vehículo en Firestore <b>*</b></span><input id="vehiculo-version" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" required placeholder="Ej.: 3"></label>
+        <label class="form-field form-field--wide"><span>ID vehículo <b>*</b></span><select id="vehiculo-id" required><option value="">Cargando vehículos disponibles…</option></select></label>
+        <label class="form-field form-field--wide"><span>Versión actual del vehículo</span><input id="vehiculo-version" type="number" min="1" step="1" readonly aria-readonly="true" placeholder="Se completa al seleccionar"></label>
       </div>
-      <p class="small-note">Consulta el campo <strong>version</strong> del documento en <strong>vehiculos</strong> antes de confirmar. El vehículo debe existir, estar activo y estar DISPONIBLE. El servidor comprobará tanto la versión de la ruta como la del vehículo.</p>
+      <p class="small-note">Se muestran vehículos activos y disponibles. La versión se consulta automáticamente; el servidor la verificará de nuevo al confirmar.</p>
       <p class="form-error" id="error-vehiculo" role="alert" hidden></p>
       <div class="dialog-actions"><button type="button" class="button button--ghost" id="cancelar-vehiculo">Cancelar</button><button type="submit" class="button button--primary" id="guardar-vehiculo">Confirmar vehículo</button></div>
     </form>
